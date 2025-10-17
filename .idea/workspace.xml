@@ -9,12 +9,8 @@
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/com/example/demo/DemoApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/example/demo/DemoApplicationTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Controller/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Controller/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/DemoApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/DemoApplication.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/demo/Model/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/demo/Model/User.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/example/demo/DemoApplicationTests.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/test-classes/com/example/demo/DemoApplicationTests.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,9 +45,11 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "JUnit.DemoApplicationTests.checkHealthNoAuthTest.executor": "Run",
     "JUnit.DemoApplicationTests.checkHealthTest.executor": "Run",
     "JUnit.DemoApplicationTests.createUserBadRequestNoAuthTest.executor": "Run",
     "JUnit.DemoApplicationTests.createUserInvalidUsernameNoAuthTest.executor": "Run",
+    "JUnit.DemoApplicationTests.createUserNoAuthTest.executor": "Run",
     "JUnit.DemoApplicationTests.executor": "Run",
     "JUnit.DemoApplicationTests.getProductInvalidIdNoAuthTest.executor": "Run",
     "JUnit.DemoApplicationTests.getProductNoAuthTest.executor": "Run",
@@ -77,7 +75,23 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Spring Boot.DemoApplication">
+  <component name="RunManager" selected="JUnit.DemoApplicationTests.createUserBadRequestNoAuthTest">
+    <configuration name="DemoApplicationTests.checkHealthNoAuthTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="demo" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.example.demo.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.example.demo" />
+      <option name="MAIN_CLASS_NAME" value="com.example.demo.DemoApplicationTests" />
+      <option name="METHOD_NAME" value="checkHealthNoAuthTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="DemoApplicationTests.createUserBadRequestNoAuthTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="demo" />
       <extension name="coverage">
@@ -142,22 +156,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="DemoApplicationTests.getProductNoIdAuthTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="demo" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.example.demo.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.example.demo" />
-      <option name="MAIN_CLASS_NAME" value="com.example.demo.DemoApplicationTests" />
-      <option name="METHOD_NAME" value="getProductNoIdAuthTest" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="DemoApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="demo" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.demo.DemoApplication" />
@@ -167,11 +165,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.DemoApplicationTests.getProductNoIdAuthTest" />
+        <item itemvalue="JUnit.DemoApplicationTests.createUserBadRequestNoAuthTest" />
         <item itemvalue="JUnit.DemoApplicationTests.getProductInvalidIdNoAuthTest" />
         <item itemvalue="JUnit.DemoApplicationTests.createUserInvalidUsernameNoAuthTest" />
-        <item itemvalue="JUnit.DemoApplicationTests.createUserBadRequestNoAuthTest" />
         <item itemvalue="JUnit.DemoApplicationTests.getProductNoAuthTest" />
+        <item itemvalue="JUnit.DemoApplicationTests.checkHealthNoAuthTest" />
       </list>
     </recent_temporary>
   </component>
@@ -207,7 +205,8 @@
       <workItem from="1760453866383" duration="4695000" />
       <workItem from="1760537434015" duration="3832000" />
       <workItem from="1760571170136" duration="3708000" />
-      <workItem from="1760624584184" duration="10543000" />
+      <workItem from="1760624584184" duration="10859000" />
+      <workItem from="1760710996342" duration="2848000" />
     </task>
     <servers />
   </component>

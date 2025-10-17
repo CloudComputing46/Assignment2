@@ -1,32 +1,32 @@
 package com.example.demo;
 
+import static io.restassured.specification.ProxySpecification.port;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static io.restassured.RestAssured.*;
 
 import com.example.demo.Model.Product;
 import com.example.demo.Model.User;
 import com.example.demo.Repository.ProductRepository;
 import com.example.demo.Repository.UserRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
+
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 class DemoApplicationTests {
 
-	@Autowired
-	MockMvc mockMvc;
+	@LocalServerPort
+	private int port;
 
 	@MockitoBean
 	UserRepository userRepository;
@@ -34,11 +34,20 @@ class DemoApplicationTests {
 	@MockitoBean
 	ProductRepository productRepository;
 
+	@BeforeEach
+	void setUp() {
+		port(port);
+		baseURI = "http://localhost:" + port;
+	}
+
 
 	@Test
 	void checkHealthNoAuthTest() throws Exception {
-		mockMvc.perform(get("/healthz"))
-				.andExpect(status().isOk());
+		given()
+				.when()
+					.get("/healthz")
+				.then()
+					.statusCode(200);
 	}
 
 	@Test
@@ -63,14 +72,17 @@ class DemoApplicationTests {
 		// whenever userRepository.save() is called, it returns u, mocking a db
 		when(userRepository.save(any(User.class))).thenReturn(actualObject);
 
-		mockMvc.perform(post("/v1/user")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(stringInput))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.id").value(1))
-				.andExpect(jsonPath("$.username").value("bob@gmail.com"))
-				.andExpect(jsonPath("$.firstName").value("Bob"))
-				.andExpect(jsonPath("$.lastName").value("Martin"));
+		given()
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
+					.body(stringInput)
+				.when()
+					.post("/v1/user")
+				.then()
+					.statusCode(201)
+					.body("id", equalTo(actualObject.getId()))
+					.body("username", equalTo(actualObject.getUsername()))
+					.body("firstName", equalTo(actualObject.getFirstName()))
+					.body("lastName", equalTo(actualObject.getLastName()));
 	}
 
 	@Test
@@ -85,14 +97,19 @@ class DemoApplicationTests {
 
 		when(productRepository.findById(1)).thenReturn(inputProduct);
 
-		mockMvc.perform(get("/v1/product/{productId}", inputProduct.getId()))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").value(1))
-				.andExpect(jsonPath("$.name").value("Testing product"))
-				.andExpect(jsonPath("$.description").value("testing the get product endpoint"))
-				.andExpect(jsonPath("$.sku").value("idk what sku means"))
-				.andExpect(jsonPath("$.manufacturer").value("Staples"))
-				.andExpect(jsonPath("$.quantity").value(2));
+		given()
+					.contentType(MediaType.APPLICATION_JSON_VALUE)
+					.body(inputProduct)
+				.when()
+					.get("/v1/product/{productId}", 1)
+				.then()
+					.statusCode(200)
+				.body("id", equalTo(inputProduct.getId()))
+				.body("description", equalTo(inputProduct.getDescription()))
+				.body("name", equalTo(inputProduct.getName()))
+				.body("sku", equalTo(inputProduct.getSku()))
+				.body("manufacturer", equalTo(inputProduct.getManufacturer()))
+				.body("quantity", equalTo(inputProduct.getQuantity()));
 	}
 
 	@Test
@@ -113,11 +130,15 @@ class DemoApplicationTests {
 
 		when(userRepository.save(any(User.class))).thenReturn(actualObject);
 
-		mockMvc.perform(post("/v1/user")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(stringInput))
-				.andExpect(status().isBadRequest());
+		given()
+		.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.body(stringInput)
+				.when()
+				.post("/v1/user")
+				.then()
+				.statusCode(400);
 	}
+
 
 	@Test
 	void createUserInvalidUsernameNoAuthTest() throws Exception {
@@ -138,10 +159,13 @@ class DemoApplicationTests {
 
 		when(userRepository.save(any(User.class))).thenReturn(actualObject);
 
-		mockMvc.perform(post("/v1/user")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(stringInput))
-				.andExpect(status().isBadRequest());
+		given()
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.body(stringInput)
+				.when()
+				.post("/v1/user")
+				.then()
+				.statusCode(400);
 	}
 
 	@Test
@@ -157,8 +181,13 @@ class DemoApplicationTests {
 
 		when(productRepository.findById(1)).thenReturn(inputProduct);
 
-		mockMvc.perform(get("/v1/product/2"))
-				.andExpect(status().isUnauthorized());
+		given()
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.body(inputProduct)
+				.when()
+				.get("/v1/product/{productId}", 2)
+				.then()
+				.statusCode(401);
 	}
 	
 
