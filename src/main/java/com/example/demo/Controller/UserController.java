@@ -8,14 +8,10 @@ import com.example.demo.Model.User;
 import java.util.Map;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-
-import com.example.demo.Model.UserStore;
 
 @RestController
 @RequestMapping("/v1/user")
@@ -47,21 +43,12 @@ public class UserController {
       return ResponseEntity.status(400).body("Username must be a valid email address");
     }
 
-    // Hash the password BEFORE storing it
-//    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//    String rawPassword = newUser.getPassword();
-//    String hashed = encoder.encode(rawPassword);
-//    newUser.setPassword(hashed);
 
     newUser.setPassword(newUser.getPassword());
-
     newUser.setId(newId);
-    UserStore.addUser(newUser.getUsername(), newUser);
-
-    System.out.println("Done till here");
 
     userRepository.save(newUser);
 
-    return ResponseEntity.status(201).body(UserStore.getUser(newUser.getUsername()));
+    return ResponseEntity.status(201).body(userRepository.findByUsername(newUser.getUsername()));
   }
 }

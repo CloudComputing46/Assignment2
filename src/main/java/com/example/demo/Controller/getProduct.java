@@ -1,9 +1,7 @@
 package com.example.demo.Controller;
 
 import com.example.demo.Model.Product;
-import com.example.demo.Model.ProductStore;
 import com.example.demo.Repository.ProductRepository;
-import com.example.demo.Repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

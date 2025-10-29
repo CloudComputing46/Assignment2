@@ -1,7 +1,6 @@
 package com.example.demo.Controller;
 
 import com.example.demo.Model.User;
-import com.example.demo.Model.UserStore;
 import com.example.demo.Repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

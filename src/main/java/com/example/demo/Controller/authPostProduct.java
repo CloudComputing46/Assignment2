@@ -2,10 +2,9 @@ package com.example.demo.Controller;
 
 
 import com.example.demo.Model.Product;
-import com.example.demo.Model.ProductStore;
-import com.example.demo.Model.UserStore;
 import com.example.demo.Model.User;
 import com.example.demo.Repository.ProductRepository;
+import com.example.demo.Repository.UserRepository;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/product")
 public class authPostProduct {
   private ProductRepository productRepository;
+  private UserRepository userRepository;
   private static AtomicInteger id = new AtomicInteger(1);
 
-  public authPostProduct(ProductRepository productRepository) {
+  public authPostProduct(ProductRepository productRepository, UserRepository userRepository) {
     this.productRepository = productRepository;
+    this.userRepository = userRepository;
   }
 
   @PostMapping
@@ -31,7 +32,7 @@ public class authPostProduct {
       return ResponseEntity.status(401).body("Unauthorized");
     }
 
-    User owner = UserStore.getUser(principal.getName());
+    User owner = userRepository.findByUsername(principal.getName());
 
     product.setId(id.getAndIncrement());
     product.setOwner_user_id(owner.getId());
