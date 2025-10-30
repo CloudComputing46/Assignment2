@@ -17,13 +17,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-class PositiveTestingClass {
+class PositiveTestingClass extends CreateInputs {
 
   @LocalServerPort
   private int port;
@@ -40,6 +41,9 @@ class PositiveTestingClass {
     baseURI = "http://localhost:" + port;
   }
 
+  private String user = "cmonger@gmail.com";
+  private String pass = "cmonger";
+
 
   @Test
   void checkHealthNoAuthTest() throws Exception {
@@ -52,21 +56,16 @@ class PositiveTestingClass {
 
   @Test
   void createUserNoAuthTest() throws Exception {
-    User actualObject = new User();
-    actualObject.setId(1);
-    actualObject.setUsername("bob@gmail.com");
-    actualObject.setFirstName("Bob");
-    actualObject.setLastName("Martin");
-    actualObject.setPassword("password");
+    User actualObject = createUser(this.user, this.pass, 1);
 
 
     String stringInput = """
 		{
 		  "id": 1,
-			"username": "bob@gmail.com",
+			"username": "cmonger@gmail.com",
 			"firstName": "Bob",
 			"lastName": "Martin",
-			"password": "password"
+			"password": "cmonger"
 		}
 		""";
 
@@ -91,13 +90,7 @@ class PositiveTestingClass {
 
   @Test
   void getProductNoAuthTest() throws Exception {
-    Product inputProduct = new Product();
-    inputProduct.setId(1);
-    inputProduct.setDescription("testing the get product endpoint");
-    inputProduct.setName("Testing product");
-    inputProduct.setQuantity(2);
-    inputProduct.setSku("idk what sku means");
-    inputProduct.setManufacturer("Staples");
+    Product inputProduct = createProduct();
 
     when(productRepository.findById(1)).thenReturn(inputProduct);
 
@@ -116,12 +109,52 @@ class PositiveTestingClass {
         .body("quantity", equalTo(inputProduct.getQuantity()));
   }
 
+  @Test
+  void getUserAuthTest() throws Exception {
+    User user = createUser(this.user, this.pass, 1);
 
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
 
+    given()
+      .auth()
+        .preemptive()
+        .basic(this.user, this.pass)
+        .when()
+        .get("/v1/user/{userId}", 1)
+        .then()
+        .log().all()
+        .statusCode(200)
+        .body("id", equalTo(1))
+        .body("username", equalTo(user.getUsername()))
+        .body("firstName", equalTo(user.getFirstName()))
+        .body("lastName", equalTo(user.getLastName()));
+  }
 
+  @Test
+  void createProductAuthTest() throws Exception {
+    Product inputProduct = createProduct();
 
+    User user = createUser(this.user, this.pass, 1);
 
+    when(productRepository.save(any(Product.class))).thenReturn(inputProduct);
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
 
-
-
+    given()
+        .auth()
+        .preemptive()
+        .basic(this.user, this.pass)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body(inputProduct)
+        .when()
+        .post("/v1/product")
+        .then()
+        .log().all()
+        .statusCode(201)
+        .body("id", equalTo(inputProduct.getId()))
+        .body("description", equalTo(inputProduct.getDescription()))
+        .body("name", equalTo(inputProduct.getName()))
+        .body("sku", equalTo(inputProduct.getSku()))
+        .body("manufacturer", equalTo(inputProduct.getManufacturer()))
+        .body("quantity", equalTo(inputProduct.getQuantity()));
+  }
 }

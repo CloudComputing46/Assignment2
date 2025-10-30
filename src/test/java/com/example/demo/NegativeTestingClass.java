@@ -23,7 +23,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class NegativeTestingClass {
+public class NegativeTestingClass extends CreateInputs {
 
   @LocalServerPort
   private int port;
@@ -34,6 +34,9 @@ public class NegativeTestingClass {
   @MockitoBean
   ProductRepository productRepository;
 
+  private String user = "cmonger@gmail.com";
+  private String pass = "cmonger";
+
   @BeforeEach
   public void setUp() {
     port(port);
@@ -42,17 +45,13 @@ public class NegativeTestingClass {
 
   @Test
   void createUserBadRequestNoAuthTest() throws Exception {
-    User actualObject = new User();
-    actualObject.setUsername("bob@gmail.com");
-    actualObject.setFirstName("Bob");
-    actualObject.setLastName("Martin");
-    actualObject.setPassword("password");
+    User actualObject = createUser(this.user, this.pass, 1);
 
     // check case where username is NOT an email
     // input has missing fields
     String stringInput = """
 				{
-				"username" : "bob@gmail.com"
+				"username" : "cmonger@gmail.com"
 				}
 				""";
 
@@ -69,18 +68,14 @@ public class NegativeTestingClass {
 
   @Test
   void createUserInvalidUsernameNoAuthTest() throws Exception {
-    User actualObject = new User();
-    actualObject.setUsername("bob@gmail.com");
-    actualObject.setFirstName("Bob");
-    actualObject.setLastName("Martin");
-    actualObject.setPassword("password");
+    User actualObject = createUser(this.user, this.pass, 1);
 
     String stringInput = """
 				{
-				"username": "bob123",
+				"username": "cmonger123",
 				"firstName": "Bob",
 				"lastName": "Martin",
-				"password": "password"
+				"password": "cmonger"
 				}
 				""";
 
@@ -97,13 +92,7 @@ public class NegativeTestingClass {
 
   @Test
   void getProductInvalidIdNoAuthTest() throws Exception {
-    Product inputProduct = new Product();
-    inputProduct.setId(1);
-    inputProduct.setDescription("testing the get product endpoint");
-    inputProduct.setName("Testing product");
-    inputProduct.setQuantity(2);
-    inputProduct.setSku("idk what sku means");
-    inputProduct.setManufacturer("Staples");
+    Product inputProduct = createProduct();
 
 
     when(productRepository.findById(1)).thenReturn(inputProduct);
@@ -114,6 +103,74 @@ public class NegativeTestingClass {
         .when()
         .get("/v1/product/{productId}", 2)
         .then()
+        .statusCode(401);
+  }
+
+  @Test
+  void getUserInvlidUsernameAuthTest() throws Exception {
+    User user = createUser("cm@gmail.com", this.pass, 1);
+
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+
+    given()
+        .auth()
+        .preemptive()
+        .basic(this.user, this.pass)
+        .when()
+        .get("/v1/user/{userId}", 1)
+        .then()
+        .log().all()
+        .statusCode(401);
+  }
+
+  @Test
+  void getUserInvlidUsernameNotEmailAuthTest() throws Exception {
+    User user = createUser("cmonger", this.pass, 1);
+
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+
+    given()
+        .auth()
+        .preemptive()
+        .basic(this.user, this.pass)
+        .when()
+        .get("/v1/user/{userId}", 1)
+        .then()
+        .log().all()
+        .statusCode(401);
+  }
+
+  @Test
+  void getUserInvlidPasswordAuthTest() throws Exception {
+    User user = createUser(this.user, this.pass, 1);
+
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+
+    given()
+        .auth()
+        .preemptive()
+        .basic(this.user, "abcd")
+        .when()
+        .get("/v1/user/{userId}", 1)
+        .then()
+        .log().all()
+        .statusCode(401);
+  }
+
+  @Test
+  void getUserInvlidIdAuthTest() throws Exception {
+    User user = createUser(this.user, this.pass, 1);
+
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+
+    given()
+        .auth()
+        .preemptive()
+        .basic(this.user, this.pass)
+        .when()
+        .get("/v1/user/{userId}", 2)
+        .then()
+        .log().all()
         .statusCode(401);
   }
 }

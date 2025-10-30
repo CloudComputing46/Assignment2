@@ -42,7 +42,7 @@ public class authPostProduct {
     //ProductStore.addProduct(product);
     productRepository.save(product);
 
-    return ResponseEntity.status(200).body(product);
+    return ResponseEntity.status(201).body(product);
 
   }
 }
