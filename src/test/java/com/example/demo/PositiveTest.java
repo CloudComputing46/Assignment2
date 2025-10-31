@@ -25,7 +25,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-class PositiveTestingClass extends CreateInputs {
+class PositiveTest extends CreateInputs {
 
   @LocalServerPort
   private int port;
