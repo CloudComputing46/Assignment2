@@ -35,6 +35,10 @@ public class authPutUserController {
       return ResponseEntity.status(400).body("User not found");
     }
 
+    if (!newUser.getUsername().contains("@") || !newUser.getUsername().contains(".com")) {
+      return ResponseEntity.status(400).body("Username must be a valid email address");
+    }
+
     userRepository.delete(currentUser);
 
     currentUser.setUsername(newUser.getUsername());
@@ -45,6 +49,6 @@ public class authPutUserController {
 
     userRepository.save(currentUser);
 
-    return ResponseEntity.status(200).body(currentUser);
+    return ResponseEntity.status(204).body(currentUser);
   }
 }

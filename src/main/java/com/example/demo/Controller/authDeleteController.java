@@ -47,6 +47,6 @@ public class authDeleteController {
 
     productRepository.delete(currProduct);
 
-    return ResponseEntity.status(200).body("Deleted");
+    return ResponseEntity.status(204).body("Deleted");
   }
 }

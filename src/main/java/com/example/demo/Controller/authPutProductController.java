@@ -31,7 +31,7 @@ public class authPutProductController {
       return ResponseEntity.status(400).body("Bad Request");
     }
     if (product == null) {
-      return ResponseEntity.status(204).body("No content");
+      return ResponseEntity.status(400).body("No content");
     }
 
     // Product currProduct = ProductStore.getProduct(Integer.parseInt(productId));
@@ -59,6 +59,6 @@ public class authPutProductController {
 
     productRepository.save(currProduct);
 
-    return ResponseEntity.status(200).body(currProduct);
+    return ResponseEntity.status(204).body(currProduct);
   }
 }

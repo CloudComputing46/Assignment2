@@ -34,6 +34,8 @@ public class authPostProduct {
 
     User owner = userRepository.findByUsername(principal.getName());
 
+    System.out.println(owner);
+
     product.setId(id.getAndIncrement());
     product.setOwner_user_id(owner.getId());
     product.setDate_added(System.currentTimeMillis());

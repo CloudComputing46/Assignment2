@@ -3,6 +3,7 @@ package com.example.demo;
 import static io.restassured.specification.ProxySpecification.port;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import static io.restassured.RestAssured.*;
@@ -56,7 +57,8 @@ class PositiveTestingClass extends CreateInputs {
 
   @Test
   void createUserNoAuthTest() throws Exception {
-    User actualObject = createUser(this.user, this.pass, 1);
+    User actualObject = createUser(this.user, this.pass, 1, this.firstName,
+        this.lastName);
 
 
     String stringInput = """
@@ -111,7 +113,8 @@ class PositiveTestingClass extends CreateInputs {
 
   @Test
   void getUserAuthTest() throws Exception {
-    User user = createUser(this.user, this.pass, 1);
+    User user = createUser(this.user, this.pass, 1, this.firstName,
+        this.lastName);
 
     when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
 
@@ -134,7 +137,8 @@ class PositiveTestingClass extends CreateInputs {
   void createProductAuthTest() throws Exception {
     Product inputProduct = createProduct();
 
-    User user = createUser(this.user, this.pass, 1);
+    User user = createUser(this.user, this.pass, 1, this.firstName,
+        this.lastName);
 
     when(productRepository.save(any(Product.class))).thenReturn(inputProduct);
     when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
@@ -156,5 +160,216 @@ class PositiveTestingClass extends CreateInputs {
         .body("sku", equalTo(inputProduct.getSku()))
         .body("manufacturer", equalTo(inputProduct.getManufacturer()))
         .body("quantity", equalTo(inputProduct.getQuantity()));
+  }
+
+  @Test
+  void putUserNewUsernameAuthTest() throws Exception {
+    User user = createUser(this.user, this.pass, 1, this.firstName,
+        this.lastName);
+    User updatedUser = createUser("cmonger123@gmail.com", this.pass,
+        1, this.firstName, this.lastName);
+
+    String updatedUserString = """
+        {
+        "id": 1,
+        "username": "cmonger123@gmail.com",
+        "firstName": "Charlie",
+        "lastName": "Monger",
+        "password": "cmonger"
+        }
+        """;
+
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+    when(userRepository.save(updatedUser)).thenReturn(updatedUser);
+
+    given()
+        .auth()
+        .preemptive()
+        .basic(this.user, this.pass)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body(updatedUserString)
+        .when()
+        .put("/v1/user/{userId}", 1)
+        .then()
+        .log().all()
+        .statusCode(204);
+  }
+
+  @Test
+  void putUserNewPasswordAuthTest() throws Exception {
+    User user = createUser(this.user, this.pass, 1, this.firstName,
+        this.lastName);
+    User updatedUser = createUser(this.user, "cmonger123",
+        1, this.firstName, this.lastName);
+
+    String updatedUserString = """
+        {
+        "id": 1,
+        "username": "cmonger@gmail.com",
+        "firstName": "Charlie",
+        "lastName": "Monger",
+        "password": "cmonger123"
+        }
+        """;
+
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+    when(userRepository.save(updatedUser)).thenReturn(updatedUser);
+
+    given()
+        .auth()
+        .preemptive()
+        .basic(this.user, this.pass)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body(updatedUserString)
+        .when()
+        .put("/v1/user/{userId}", 1)
+        .then()
+        .log().all()
+        .statusCode(204);
+  }
+
+  @Test
+  void putUserNewFirstnameAuthTest() throws Exception {
+    User user = createUser(this.user, this.pass, 1, this.firstName,
+        this.lastName);
+    User updatedUser = createUser(this.user, this.pass,
+        1, "Reginald", this.lastName);
+
+    String updatedUserString = """
+        {
+        "id": 1,
+        "username": "cmonger123@gmail.com",
+        "firstName": "Reginald",
+        "lastName": "Monger",
+        "password": "cmonger"
+        }
+        """;
+
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+    when(userRepository.save(updatedUser)).thenReturn(updatedUser);
+
+    given()
+        .auth()
+        .preemptive()
+        .basic(this.user, this.pass)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body(updatedUserString)
+        .when()
+        .put("/v1/user/{userId}", 1)
+        .then()
+        .log().all()
+        .statusCode(204);
+  }
+
+  @Test
+  void putUserNewLastnameAuthTest() throws Exception {
+    User user = createUser(this.user, this.pass, 1, this.firstName,
+        this.lastName);
+    User updatedUser = createUser(this.user, this.pass,
+        1, this.firstName, "Spencer");
+
+    String updatedUserString = """
+        {
+        "id": 1,
+        "username": "cmonger123@gmail.com",
+        "firstName": "Charlie",
+        "lastName": "Spencer",
+        "password": "cmonger"
+        }
+        """;
+
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+    when(userRepository.save(updatedUser)).thenReturn(updatedUser);
+
+    given()
+        .auth()
+        .preemptive()
+        .basic(this.user, this.pass)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body(updatedUserString)
+        .when()
+        .put("/v1/user/{userId}", 1)
+        .then()
+        .log().all()
+        .statusCode(204);
+  }
+
+  @Test
+  void putProductAuthTest() throws Exception {
+    User user = createUser(this.user, this.pass, 1, this.firstName, this.lastName);
+    Product product = createProduct();
+
+    Product newProduct = createProduct("New product name", this.description, this.sku,
+        this.manufacturer, 3, 1);
+
+    when(productRepository.findById(product.getId())).thenReturn(product);
+    when(productRepository.save(newProduct)).thenReturn(newProduct);
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+
+    given()
+    .auth()
+        .preemptive()
+        .basic(this.user, this.pass)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body(newProduct)
+        .when()
+        .put("/v1/product/{productId}", 1)
+        .then()
+        .log().all()
+        .statusCode(204);
+  }
+
+  @Test
+  void patchProductAuthTest() throws Exception {
+    User user = createUser(this.user, this.pass, 1, this.firstName, this.lastName);
+    Product product = createProduct();
+
+    Product newProduct = createProduct("New product name", this.description, this.sku,
+        this.manufacturer, this.quantity, this.ownerId);
+
+    String newProductString = """
+        {
+          "name": "New product name"
+        }
+        """;
+
+    when(productRepository.findById(product.getId())).thenReturn(product);
+    when(productRepository.save(newProduct)).thenReturn(newProduct);
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+
+    given()
+        .auth()
+        .preemptive()
+        .basic(this.user, this.pass)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body(newProductString)
+        .when()
+        .patch("/v1/product/{productId}", 1)
+        .then()
+        .log().all()
+        .statusCode(204);
+  }
+
+  @Test
+  void deleteProductAuthTest() throws Exception {
+    Product product = createProduct();
+
+    User user = createUser(this.user, this.pass, 1, this.firstName, this.lastName);
+
+    when(productRepository.findById(product.getId())).thenReturn(product);
+    when(userRepository.findByUsername(user.getUsername())).thenReturn(user);
+    doNothing().when(productRepository).delete(product);
+
+    given()
+        .auth()
+        .preemptive()
+        .basic(this.user, this.pass)
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        .body(product)
+        .when()
+        .delete("/v1/product/{productId}", 1)
+        .then()
+        .log().all()
+        .statusCode(204);
   }
 }

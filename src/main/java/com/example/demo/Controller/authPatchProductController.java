@@ -37,11 +37,19 @@ public class authPatchProductController {
     // User currUser = UserStore.getUser(principal.getName());
     User currUser = userRepository.findByUsername(principal.getName());
 
+    if (currUser == null) {
+      return ResponseEntity.status(400).body("Bad Request");
+    }
+
     // Product currProduct = ProductStore.getProduct(Integer.parseInt(productId));
     Product currProduct = productRepository.findById(Integer.parseInt(productId));
 
+    if (currProduct == null) {
+      return ResponseEntity.status(400).body("Bad Request");
+    }
+
     if (currUser.getId() != currProduct.getOwner_user_id()) {
-      return ResponseEntity.status(401).body("Forbidden");
+      return ResponseEntity.status(403).body("Forbidden");
     }
 
     productRepository.delete(currProduct);
@@ -67,6 +75,6 @@ public class authPatchProductController {
 
     productRepository.save(currProduct);
 
-    return ResponseEntity.status(200).body(currProduct);
+    return ResponseEntity.status(204).body(currProduct);
   }
 }
