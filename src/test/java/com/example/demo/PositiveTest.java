@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -25,6 +26,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@Import(SecurityConfig.class)
 class PositiveTest extends CreateInputs {
 
   @LocalServerPort
