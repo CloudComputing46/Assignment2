@@ -34,8 +34,8 @@ jobs:
       - name: Build and run tests
         run: mvn clean verify
 
-      - name: Run tests with debug
-        run: mvn test -X
+#      - name: Run tests with debug
+#        run: mvn test -X
 
         env:
           MAVEN_OPTS: "-XX:+EnableDynamicAgentLoading"
