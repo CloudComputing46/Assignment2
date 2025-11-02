@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import static io.restassured.specification.ProxySpecification.port;
+import static io.restassured.RestAssured.port;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -14,6 +14,7 @@ import com.example.demo.Model.Product;
 import com.example.demo.Model.User;
 import com.example.demo.Repository.ProductRepository;
 import com.example.demo.Repository.UserRepository;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientWebSecurityAutoConfiguration;
@@ -46,7 +47,8 @@ class PositiveTest extends CreateInputs {
 
   @BeforeEach
   void setUp() {
-    port(port);
+//    port(port);
+    RestAssured.port = port;
     baseURI = "http://localhost:" + port;
   }
 
