@@ -40,7 +40,8 @@ jobs:
         env:
           MAVEN_OPTS: "-XX:+EnableDynamicAgentLoading"
 
-      - name: Show surefire reports
+      - name: Show surefire reports (first 50 lines)
+        if: failure()
         run: |
           ls -R target/surefire-reports
           cat target/surefire-reports/*.txt | head -n 50
