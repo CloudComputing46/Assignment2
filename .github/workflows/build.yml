@@ -32,7 +32,7 @@ jobs:
 #        run: mvn clean install -DskipTests
 
       - name: Build and run tests
-        run: mvn clean verify
+        run: mvn clean verify -e
 
 #      - name: Run tests with debug
 #        run: mvn test -X
