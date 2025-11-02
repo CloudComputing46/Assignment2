@@ -8,26 +8,30 @@ import static org.mockito.Mockito.when;
 
 import static io.restassured.RestAssured.*;
 
+
+
 import com.example.demo.Model.Product;
 import com.example.demo.Model.User;
 import com.example.demo.Repository.ProductRepository;
 import com.example.demo.Repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientWebSecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 
 
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@Import(SecurityConfig.class)
+@ActiveProfiles("test")
 class PositiveTest extends CreateInputs {
 
 
