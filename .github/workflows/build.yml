@@ -34,15 +34,27 @@ jobs:
           MAVEN_OPTS: "-XX:+EnableDynamicAgentLoading"
         continue-on-error: true
 
-      - name: Upload Surefire Reports
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: surefire-reports
-          path: target/surefire-reports/
-
       - name: Display test results
         if: always()
         run: |
-          echo "=== Test Results ==="
-          find target/surefire-reports -name "*.txt" -exec echo "File: {}" \; -exec cat {} \;
+          echo "=== Displaying Test Failure Details ==="
+          if [ -d "target/surefire-reports" ]; then
+            find target/surefire-reports -name "*.txt" -exec echo "=== File: {} ===" \; -exec cat {} \; -exec echo "" \;
+            echo ""
+            echo "=== XML Reports ==="
+            find target/surefire-reports -name "*.xml" -exec echo "=== File: {} ===" \; -exec cat {} \; -exec echo "" \;
+          else
+            echo "No surefire-reports directory found"
+          fi
+
+      - name: Upload Surefire Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports/
+          retention-days: 5
+
+      - name: Fail if tests failed
+        if: steps.test.outcome == 'failure'
+        run: exit 1
