@@ -39,7 +39,6 @@ public class TestSecurityConfig {
   @Bean
   @Primary
   public UserDetailsService userDetailsService() {
-    // Use in-memory user for tests - doesn't require UserRepository
     return new InMemoryUserDetailsManager(
         User.builder()
             .username("cmonger@gmail.com")

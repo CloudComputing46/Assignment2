@@ -1,7 +1,6 @@
 package com.example.demo;
 
-import static io.restassured.specification.ProxySpecification.port;
-import static org.hamcrest.Matchers.equalTo;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -16,12 +15,10 @@ import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -51,7 +48,6 @@ public class NegativeTest extends CreateInputs {
 
   @BeforeEach
   public void setUp() {
-//    port(port);
     RestAssured.port = port;
     baseURI = "http://localhost:" + port;
   }
@@ -60,9 +56,7 @@ public class NegativeTest extends CreateInputs {
   void createUserBadRequestNoAuthTest() throws Exception {
     User actualObject = createUser(this.user, this.pass, 1, this.firstName,
         this.lastName);
-
-    // check case where username is NOT an email
-    // input has missing fields
+    
     String stringInput = """
 				{
 				"username" : "cmonger@gmail.com"
