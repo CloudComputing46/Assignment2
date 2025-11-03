@@ -29,23 +29,10 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Build and run tests
-        run: mvn clean test -X
+        run: mvn clean -B verify
         env:
           MAVEN_OPTS: "-XX:+EnableDynamicAgentLoading"
         continue-on-error: true
-
-      - name: Display test results
-        if: always()
-        run: |
-          echo "=== Displaying Test Failure Details ==="
-          if [ -d "target/surefire-reports" ]; then
-            find target/surefire-reports -name "*.txt" -exec echo "=== File: {} ===" \; -exec cat {} \; -exec echo "" \;
-            echo ""
-            echo "=== XML Reports ==="
-            find target/surefire-reports -name "*.xml" -exec echo "=== File: {} ===" \; -exec cat {} \; -exec echo "" \;
-          else
-            echo "No surefire-reports directory found"
-          fi
 
       - name: Upload Surefire Reports
         if: always()

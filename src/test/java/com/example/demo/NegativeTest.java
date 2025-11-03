@@ -56,7 +56,7 @@ public class NegativeTest extends CreateInputs {
   void createUserBadRequestNoAuthTest() throws Exception {
     User actualObject = createUser(this.user, this.pass, 1, this.firstName,
         this.lastName);
-    
+
     String stringInput = """
 				{
 				"username" : "cmonger@gmail.com"
