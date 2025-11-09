@@ -1,0 +1,118 @@
+#!/bin/bash
+set -e
+set -u
+
+# =============================
+# Configurable Variables
+# =============================
+APP_NAME="csye6225"
+APP_DIR="/opt/$APP_NAME"
+ZIP_FILE="/root/dhaanush_amruthur_satish_002336512_a_03.zip"
+JAVA_CMD="/usr/bin/java"
+
+# =============================
+# Environment Variables (with defaults)
+# =============================
+DB_NAME=${DB_NAME:-appdb}
+DB_USER=${DB_USER:-app}
+DB_PASS=${DB_PASS:-app}
+
+# =============================
+# 1. Update & Upgrade
+# =============================
+echo "[1/9] Updating packages..."
+apt update -y && apt upgrade -y
+
+# =============================
+# 2. Install Dependencies
+# =============================
+echo "[2/9] Installing Java, Maven, MySQL, unzip..."
+apt install -y mysql-server unzip openjdk-17-jdk maven
+
+systemctl enable mysql
+systemctl start mysql
+
+# =============================
+# 3. Configure Database
+# =============================
+echo "[3/9] Configuring MySQL..."
+mysql <<MYSQL_SCRIPT
+CREATE DATABASE IF NOT EXISTS ${DB_NAME};
+CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';
+GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';
+FLUSH PRIVILEGES;
+MYSQL_SCRIPT
+
+echo "✅ Database '${DB_NAME}' with user '${DB_USER}' configured."
+
+# =============================
+# 4. Create Linux Group & User
+# =============================
+echo "[4/9] Creating Linux group/user..."
+if ! getent group ${APP_NAME} >/dev/null; then
+    groupadd ${APP_NAME}
+fi
+if ! id -u ${APP_NAME} >/dev/null 2>&1; then
+    useradd -r -s /bin/false -g ${APP_NAME} ${APP_NAME}
+fi
+
+# =============================
+# 5. Deploy Application
+# =============================
+echo "[5/9] Deploying application files..."
+mkdir -p ${APP_DIR}
+if [ -f "${ZIP_FILE}" ]; then
+    unzip -o "${ZIP_FILE}" -d ${APP_DIR}
+else
+    echo "❌ Zip file not found: ${ZIP_FILE}"
+    exit 1
+fi
+
+# Detect nested folder (like dhaanush_amruthur_satish_002336512_a_03/)
+cd ${APP_DIR}
+if [ $(ls -d */ 2>/dev/null | wc -l) -eq 1 ]; then
+    SUBDIR=$(ls -d */ | head -n 1)
+    echo "📁 Detected nested folder: ${SUBDIR}"
+    cd "${SUBDIR}"
+fi
+
+# =============================
+# 6. Build Application with Maven
+# =============================
+echo "[6/9] Building application (Spring Boot Repackage)..."
+if [ -f "pom.xml" ]; then
+    mvn clean package spring-boot:repackage -DskipTests
+else
+    echo "❌ No pom.xml found — please check extracted structure."
+    exit 1
+fi
+
+TARGET_JAR=$(find target -type f -name "*.jar" | head -n 1)
+if [ -z "${TARGET_JAR}" ]; then
+    echo "❌ No jar found after build."
+    exit 1
+fi
+echo "✅ Build complete: ${TARGET_JAR}"
+
+# =============================
+# 7. Set Permissions
+# =============================
+echo "[7/9] Setting permissions..."
+chown -R ${APP_NAME}:${APP_NAME} ${APP_DIR}
+chmod -R 750 ${APP_DIR}
+
+# =============================
+# 8. Launch Spring Boot
+# =============================
+echo "[8/9] Launching Spring Boot..."
+sudo -u ${APP_NAME} nohup ${JAVA_CMD} -jar ${TARGET_JAR} > /var/log/${APP_NAME}.log 2>&1 &
+
+sleep 5
+echo "✅ Application started. Logs: tail -f /var/log/${APP_NAME}.log"
+
+# =============================
+# 9. Done
+# =============================
+echo "🎉 Setup complete!"
+echo "➡ App directory: ${APP_DIR}"
+echo "➡ DB: ${DB_NAME} (user=${DB_USER})"
